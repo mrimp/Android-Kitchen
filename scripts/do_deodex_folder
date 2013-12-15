@@ -33,6 +33,7 @@ cd WORKING_*
 
 num_odex_fr=`find system/framework | grep -c "\.odex$"`
 num_odex_app=`find system/app | grep -c "\.odex$"`
+num_odex_priv=`find system/priv-app | grep -c "\.odex$"`
 
 
 #
@@ -89,6 +90,12 @@ do
   elif [ $folder == app ]
   then
     num_odex_folder=$num_odex_app
+  else
+    echo
+    echo "Error: Folder $folder not valid!"
+  if [ $folder == priv-app ]
+  then
+    num_odex_folder=$num_odex_priv
   else
     echo
     echo "Error: Folder $folder not valid!"

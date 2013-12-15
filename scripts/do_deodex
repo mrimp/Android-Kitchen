@@ -61,6 +61,13 @@ do
     exit 0
   fi
 
+if [ ! -d system/priv-app ]
+  then
+    echo "system/priv-app is missing!"
+    cd ..
+    scripts/press_enter
+    exit 0
+  fi
 
 
   #
@@ -76,6 +83,7 @@ do
     num_preload_apk=`find . | grep -c "\.apk$"`
     num_sysapp_odex=`find ../../../../system/app | grep -c "\.odex$"`
     num_sysfr_odex=`find ../../../../system/framework | grep -c "\.odex$"`
+    num_syspriv_odex=`find ../../../../system/priv-app | grep -c "\.odex$"`
 
     # Case 1 - No odex files in preload or /system/app
     if [ $num_preload_odex == 0 ] && [ $num_sysapp_odex == 0 ] 
@@ -136,9 +144,11 @@ do
 
   num_odex_fr=`find system/framework | grep -c "\.odex$"`
   num_odex_app=`find system/app | grep -c "\.odex$"`
+  num_odex_priv=`find system/priv-app | grep -c "\.odex$"`
 
   echo "Found $num_odex_fr *.odex files in /system/framework"
   echo "Found $num_odex_app *.odex files in /system/app"
+  echo "Found $num_odex_priv *.odex files in /system/priv-app"
 
   if [ -e preload/symlink/system/app/preload_apk_list ]
   then
@@ -149,7 +159,7 @@ do
   fi
 
 
-  if [ $num_odex_fr == 0 ] && [ $num_odex_app == 0 ]
+  if [ $num_odex_fr == 0 ] && [ $num_odex_app == 0 ] && [ $num_odex_priv == 0 ]
   then
     echo
     echo "No need to de-odex!"
@@ -158,7 +168,7 @@ do
     exit 0
   fi
 
-  if [ $num_odex_fr == 0 ] && [ $num_odex_app -gt 0 ]
+  if [ $num_odex_fr == 0 ] && [ $num_odex_app -gt 0 ] && [ $num_odex_priv -gt 0 ]
   then
     echo
     echo "WARNING: You must deodex the app folder if you had already"
@@ -181,7 +191,7 @@ do
   echo "Enter a choice:"
   echo
 
-  if [ $num_odex_app -gt 0 ] || [ $num_odex_fr -gt 0 ]
+  if [ $num_odex_app -gt 0 ] || [ $num_odex_fr -gt 0 ] || [ $num_odex_priv -gt 0 ]
   then
     echo " bb  = Back up both folders (do first!)"
   fi
@@ -199,9 +209,13 @@ do
   then
     echo "  a  = Deodex /system/app"
   fi
-  if [ $num_odex_app -gt 0 ] && [ $num_odex_fr -gt 0 ]
+  if [ $num_odex_priv -gt 0 ]
   then
-    echo "  b  = Deodex both folders (recommended)"
+    echo "  p  = Deodex /system/priv-app"
+  fi
+  if [ $num_odex_app -gt 0 ] && [ $num_odex_fr -gt 0 ] && [ $num_odex_priv -gt 0 ]
+  then
+    echo "  b  = Deodex all folders (fram, app, and priv-app)"
   fi
   echo "  s  = Deodex a single file"
   echo "  x  = Exit"
@@ -213,6 +227,7 @@ do
   list1=( app )
   list2=( framework )
   list3=( framework app )
+  list4=( priv-app )
 
   if [ "$enterChoice" == "a" ]
   then
@@ -226,6 +241,9 @@ do
   then
     dir_list=framework
   elif [ "$enterChoice" == "b" ] 
+  then
+    dir_list=priv-app
+  elif [ "$enterChoice" == "p" ] 
   then
     dir_list="framework app"
   elif [ "$enterChoice" == "s" ]
@@ -299,12 +317,15 @@ do
   num_odex_app=`find system/app | grep -c "\.odex$"`
   num_apk_app=`find system/app | grep -c "\.apk$"`
   num_odex_fr=`find system/framework | grep -c "\.odex$"`
+  num_odex_priv=`find system/priv-app | grep -c "\.odex$"`
+  num_apk_priv=`find system/priv-app | grep -c "\.apk$"`
 
   echo
   echo "$num_odex_app *.odex files remain in system/app"
   echo "$num_odex_fr *.odex files remain in system/framework"
+  echo "$num_odex_priv *.odex files remain in system/priv-app"
 
-  if [ $num_odex_fr == 0 ] && [ $num_odex_app -gt 0 ]
+  if [ $num_odex_fr == 0 ] && [ $num_odex_app -gt 0 ] && [ $num_odex_priv -gt 0 ]
   then
     echo
     echo "WARNING: You must deodex the app folder if you had already"
@@ -332,7 +353,7 @@ do
   cd ..
   scripts/press_enter
 
-  if [ $num_odex_fr == 0 ] && [ $num_odex_app == 0 ]
+  if [ $num_odex_fr == 0 ] && [ $num_odex_app == 0 ] && [ $num_odex_priv == 0 ]
   then
     exit 0
   fi
