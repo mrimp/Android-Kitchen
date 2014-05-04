@@ -90,7 +90,8 @@ do
   elif [ $folder == app ]
   then
     num_odex_folder=$num_odex_app
-  elif [ $folder == priv-app ]
+  else
+  elif [ $folder == privapp ]
   then
     num_odex_folder=$num_odex_privapp
   else

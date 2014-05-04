@@ -45,7 +45,7 @@ done
 # Call baksmali
 #
 
-java_cmd="java -Xmx512m -jar baksmali.jar -a $api_level -d $bootclass_dir -x $odex_file"
+java_cmd="java -Xmx512m -jar baksmali.jar -a $api_level -I -d $bootclass_dir -x $odex_file"
 echo $java_cmd
 $java_cmd
 is_error=$?
